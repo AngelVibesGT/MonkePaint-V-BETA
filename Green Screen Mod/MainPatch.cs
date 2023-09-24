@@ -14,7 +14,7 @@ using static UnityEngine.Rendering.VirtualTexturing.Debugging;
 namespace Green_Screen_Mod_Gtag
 {
     [BepInPlugin(modGUID, modName, modVersion)]
-    public class Class1 : BaseUnityPlugin
+    public class MainPatch : BaseUnityPlugin
     {
 
         private const string modGUID = "Green.Screen.Mod.By.AV";
@@ -32,6 +32,9 @@ namespace Green_Screen_Mod_Gtag
         static bool Wiping;
         static bool TriggerToggle;
         static bool SecondaryToggle;
+        static bool LPrimaryDown;
+        static bool LPrimaryToggle;
+        static bool FreezeBrush;
 
         public static int FramePressCoolDown = 0;
         static int BtnCooldown;
@@ -128,8 +131,10 @@ namespace Green_Screen_Mod_Gtag
                 {
                     gripDown = false;
                 }
-                GSY = ControllerInputPoller.instance.rightControllerPrimary2DAxis.y;
-
+                if (!FreezeBrush)
+                {
+                    GSY = ControllerInputPoller.instance.rightControllerPrimary2DAxis.y;
+                }
 
                 if (ControllerInputPoller.instance.rightControllerIndexFloat > 0)
                 {
@@ -146,6 +151,14 @@ namespace Green_Screen_Mod_Gtag
                 else
                 {
                     SecondaryToggle = false;
+                }
+                if(ControllerInputPoller.instance.leftControllerPrimaryButton)
+                {
+                    LPrimaryDown = true;
+                }
+                else
+                {
+                    LPrimaryDown = false; 
                 }
 
                 if (gripDown && triggerDown && Painter == null)
@@ -204,12 +217,29 @@ namespace Green_Screen_Mod_Gtag
                         InvisGreenScreenOBJ = null;
                         LineW = 0.1f;
 
-                        foreach (var line in lines)
-                        {
-                            GameObject.Destroy(line.gameObject);
-                        }
+                        //foreach (var line in lines)
+                        //{
+                           // GameObject.Destroy(line.gameObject);
+                        //}
                         Wiping = false;
 
+                    }
+                    if(LPrimaryDown && !LPrimaryToggle)
+                    {
+                        LPrimaryToggle = true;
+                        if(!FreezeBrush)
+                        {
+                            FreezeBrush = true;
+                            GSY = 0;
+                        }
+                        else
+                        {
+                            FreezeBrush = false;
+                        }
+                    }
+                    else if(!LPrimaryDown && LPrimaryToggle)
+                    {
+                        LPrimaryToggle = false;
                     }
                 }
                 if(BtnCooldown > 0)
@@ -624,10 +654,10 @@ namespace Green_Screen_Mod_Gtag
         public string BtnId;
             private void OnTriggerEnter(Collider collider)
             {
-            if(Time.frameCount >= Class1.FramePressCoolDown + 30)
+            if(Time.frameCount >= MainPatch.FramePressCoolDown + 30)
             {
-                Class1.TriggerBtns(BtnId);
-                Class1.FramePressCoolDown = Time.frameCount;
+                MainPatch.TriggerBtns(BtnId);
+                MainPatch.FramePressCoolDown = Time.frameCount;
             }
                 
             }
