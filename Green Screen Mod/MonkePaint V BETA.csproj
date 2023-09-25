@@ -293,6 +293,8 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="PaintPallet.cs" />
+    <Compile Include="InputController.cs" />
     <Compile Include="MainPatch.cs" />
     <Compile Include="PluginInfo.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />

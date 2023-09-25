@@ -4,8 +4,11 @@ namespace Green_Screen_Mod_Gtag
 {
     internal class PluginInfo
     {
-        private const string modGUID = "Green.Screen.Mod.By.AV";
-        private const string modName = "MonkePaint V BETA ";
-        private const string modVersion = "0.0.0.1";
+        //GUID
+        public const string modGUID = "Green.Screen.Mod.By.AV";
+        //name
+        public const string modName = "MonkePaint V BETA ";
+        //version
+        public const string modVersion = "0.0.0.1";
     }
 }
