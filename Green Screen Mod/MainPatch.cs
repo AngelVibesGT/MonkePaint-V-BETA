@@ -124,14 +124,14 @@ namespace Green_Screen_Mod_Gtag
                         tempDropper.transform.Find("Handle").GetComponent<Renderer>().material.color = new Color(0, 0, 1, 0.5f);
                     }
                     //checks if the hand is pointing toward the brush and changes size and color
-                    if (InputController.instance.CRY <= -0.15)
+                    if (InputController.instance.CRY >= 0.15)
                     {
                         tempBrush.transform.localScale = new Vector3(0.020f, 0.020f, 0.020f);
                         tempBrush.transform.Find("Brush").GetComponent<Renderer>().material.color = new Color(0.5f, 0.5f, 1, 0.5f);
                         tempBrush.transform.Find("Handle").GetComponent<Renderer>().material.color = new Color(0.5f, 0.5f, 1, 0.5f);
                     }
                     //checks if the hand is pointing toward the dropper and changes size and color
-                    else if (InputController.instance.CRY >= 0.15)
+                    else if (InputController.instance.CRY <= -0.15)
                     {
                         tempDropper.transform.localScale = new Vector3(0.10f, 0.10f, 0.10f);
                         tempDropper.transform.Find("Tip").GetComponent<Renderer>().material.color = new Color(0.5f, 0.5f, 1, 0.5f);
@@ -158,7 +158,7 @@ namespace Green_Screen_Mod_Gtag
                         PaintPallet.instance.DrawPainter();
                     }
                     //draws the brush
-                    if (InputController.instance.CRY <= -0.3)
+                    if (InputController.instance.CRY >= 0.15)
                     {
                         DrawGreenScreen();
                         InputController.instance.Dropping = false;
@@ -166,7 +166,7 @@ namespace Green_Screen_Mod_Gtag
                     }
 
                     //draws the dropper
-                    else if (InputController.instance.CRY >= 0.3)
+                    else if (InputController.instance.CRY <= -0.15)
                     {
                         DrawDropper();
                         InputController.instance.Dropping = true;

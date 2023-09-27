@@ -96,6 +96,7 @@ namespace Green_Screen_Mod
                 }
                 //controller y rotation
                 CRY = ControllerInputPoller.instance.leftControllerRotation.x;
+                Debug.Log(CRY);
             }
             catch
             {
