@@ -293,11 +293,18 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="LineCollider.cs" />
     <Compile Include="PaintPallet.cs" />
     <Compile Include="InputController.cs" />
     <Compile Include="MainPatch.cs" />
     <Compile Include="PluginInfo.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="gtagbrush" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="gtagdropper" />
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="gtagpainter" />

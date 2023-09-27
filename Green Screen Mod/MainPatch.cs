@@ -11,6 +11,7 @@ using UnityEngine.UI;
 using UnityEngine.UIElements;
 using static UnityEngine.Rendering.VirtualTexturing.Debugging;
 using Green_Screen_Mod;
+using GorillaExtensions;
 
 namespace Green_Screen_Mod_Gtag
 {
@@ -27,17 +28,21 @@ namespace Green_Screen_Mod_Gtag
         public static int FramePressCoolDown = 0;
         static int BtnCooldown;
 
-        static GameObject GreenScreenOBJ;
+        public static GameObject GreenScreenOBJ = null;
+        public static GameObject Dropper = null;
         static GameObject InvisGreenScreenOBJ;
         static GameObject Line;
         static List<GameObject> lines = new List<GameObject>();
 
-        static GameObject canvasOBJ = null;
+        static GameObject tempBrush = null;
+        static GameObject tempDropper = null;
 
         static LineRenderer line;
 
         static float WipeT = 3;
 
+        static AssetBundle bundle;
+        static AssetBundle bundle2;
 
         static Vector3 GSP;
         static Vector3 PrePos;
@@ -49,6 +54,12 @@ namespace Green_Screen_Mod_Gtag
             AssetBundle bundle = AssetBundle.LoadFromStream(stream);
             stream.Close();
             return bundle;
+        }
+
+        void Start()
+        {
+            bundle = LoadAssetBundle("Green_Screen_Mod.gtagbrush");
+            bundle2 = LoadAssetBundle("Green_Screen_Mod.gtagdropper");
         }
 
         void FixedUpdate()
@@ -64,23 +75,110 @@ namespace Green_Screen_Mod_Gtag
             //list[1].TryGetFeatureValue(CommonUsages.primaryButton, out primaryDown);
             try
             {
-                //draws Paint Pallet
-                if (InputController.instance.gripDown && InputController.instance.triggerDown && PaintPallet.instance.Painter == null)
+                //Controlls the whole tool selection
+                if (InputController.instance.LSecondaryDown)
                 {
-                    Debug.Log("Drawing Painter");
-                    PaintPallet.instance.DrawPainter();
+                    //wipes old tool
+                    if (!InputController.instance.TempWiping)
+                    {
+                        InputController.instance.TempWiping = true;
+                        GameObject.Destroy(PaintPallet.instance.Painter);
+                        GameObject.Destroy(GreenScreenOBJ);
+                        GameObject.Destroy(InvisGreenScreenOBJ);
+                        GameObject.Destroy(Dropper);
+                        PaintPallet.instance.Painter = null;
+                        GreenScreenOBJ = null;
+                        InvisGreenScreenOBJ = null;
+                        Dropper = null;
+                        PaintPallet.instance.LineW = 0.1f;
+                        InputController.instance.Drawing = true;
+                        InputController.instance.Dropping = false;
+
+                    }
+                    //spawns a temp brush
+                    if (tempBrush == null)
+                    {
+                        tempBrush = Instantiate(bundle.LoadAsset<GameObject>("GtagBrush"));
+                        tempBrush.transform.parent = GorillaLocomotion.Player.Instance.leftControllerTransform;
+                        tempBrush.transform.position = GorillaLocomotion.Player.Instance.leftControllerTransform.position;
+                        tempBrush.transform.localPosition = new Vector3(0f, 0.1f, 0f);
+                        tempBrush.transform.rotation = GorillaLocomotion.Player.Instance.leftControllerTransform.rotation;
+                        tempBrush.transform.localScale = new Vector3(0.012f, 0.012f, 0.012f);
+                        tempBrush.transform.Find("Brush").GetComponent<Renderer>().material.shader = GorillaTagger.Instance.offlineVRRig.materialsToChangeTo[0].shader;
+                        tempBrush.transform.Find("Handle").GetComponent<Renderer>().material.shader = GorillaTagger.Instance.offlineVRRig.materialsToChangeTo[0].shader;
+                        tempBrush.transform.Find("Brush").GetComponent<Renderer>().material.color = new Color(0, 0, 1,0.5f);
+                        tempBrush.transform.Find("Handle").GetComponent<Renderer>().material.color = new Color(0, 0, 1, 0.5f);
+                    }
+                    //spawns a temp dropper
+                    if (tempDropper == null)
+                    {
+                        tempDropper = Instantiate(bundle2.LoadAsset<GameObject>("GtagDropper"));
+                        tempDropper.transform.parent = GorillaLocomotion.Player.Instance.leftControllerTransform;
+                        tempDropper.transform.position = GorillaLocomotion.Player.Instance.leftControllerTransform.position;
+                        tempDropper.transform.localPosition = new Vector3(0f, -0.25f, 0f);
+                        tempDropper.transform.rotation = GorillaLocomotion.Player.Instance.leftControllerTransform.rotation;
+                        tempDropper.transform.localScale = new Vector3(0.07f, 0.07f, 0.07f);
+                        tempDropper.transform.Find("Tip").GetComponent<Renderer>().material.shader = GorillaTagger.Instance.offlineVRRig.materialsToChangeTo[0].shader;
+                        tempDropper.transform.Find("Handle").GetComponent<Renderer>().material.shader = GorillaTagger.Instance.offlineVRRig.materialsToChangeTo[0].shader;
+                        tempDropper.transform.Find("Tip").GetComponent<Renderer>().material.color = new Color(0, 0, 1, 0.5f);
+                        tempDropper.transform.Find("Handle").GetComponent<Renderer>().material.color = new Color(0, 0, 1, 0.5f);
+                    }
+                    //checks if the hand is pointing toward the brush and changes size and color
+                    if (InputController.instance.CRY <= -0.15)
+                    {
+                        tempBrush.transform.localScale = new Vector3(0.020f, 0.020f, 0.020f);
+                        tempBrush.transform.Find("Brush").GetComponent<Renderer>().material.color = new Color(0.5f, 0.5f, 1, 0.5f);
+                        tempBrush.transform.Find("Handle").GetComponent<Renderer>().material.color = new Color(0.5f, 0.5f, 1, 0.5f);
+                    }
+                    //checks if the hand is pointing toward the dropper and changes size and color
+                    else if (InputController.instance.CRY >= 0.15)
+                    {
+                        tempDropper.transform.localScale = new Vector3(0.10f, 0.10f, 0.10f);
+                        tempDropper.transform.Find("Tip").GetComponent<Renderer>().material.color = new Color(0.5f, 0.5f, 1, 0.5f);
+                        tempDropper.transform.Find("Handle").GetComponent<Renderer>().material.color = new Color(0.5f, 0.5f, 1, 0.5f);
+                    }
+                    //if not pointing towards any keep old colors
+                    else
+                    {
+                        tempBrush.transform.localScale = new Vector3(0.012f, 0.012f, 0.012f);
+                        tempDropper.transform.localScale = new Vector3(0.07f, 0.07f, 0.07f);
+                        tempBrush.transform.Find("Brush").GetComponent<Renderer>().material.color = new Color(0, 0, 1, 0.5f);
+                        tempBrush.transform.Find("Handle").GetComponent<Renderer>().material.color = new Color(0, 0, 1, 0.5f);
+                        tempDropper.transform.Find("Tip").GetComponent<Renderer>().material.color = new Color(0, 0, 1, 0.5f);
+                        tempDropper.transform.Find("Handle").GetComponent<Renderer>().material.color = new Color(0, 0, 1, 0.5f);
+                    }
                 }
-                else if (InputController.instance.gripDown && InputController.instance.triggerDown && PaintPallet.instance.Painter != null)
+                //when released set to selected tool
+                else if (!InputController.instance.LSecondaryDown && tempBrush != null && tempDropper != null)
                 {
-                    Debug.Log(InputController.instance.gripDown);
+                    InputController.instance.TempWiping = false;
+                    //draws the paint pallet
+                    if (PaintPallet.instance.Painter == null)
+                    {
+                        PaintPallet.instance.DrawPainter();
+                    }
+                    //draws the brush
+                    if (InputController.instance.CRY <= -0.3)
+                    {
+                        DrawGreenScreen();
+                        InputController.instance.Dropping = false;
+                        InputController.instance.Drawing = true;
+                    }
+
+                    //draws the dropper
+                    else if (InputController.instance.CRY >= 0.3)
+                    {
+                        DrawDropper();
+                        InputController.instance.Dropping = true;
+                        InputController.instance.Drawing = false;
+                    }
+                    //removes the temp brush and dropper
+                    GameObject.Destroy(tempBrush);
+                    GameObject.Destroy(tempDropper);
+                    tempBrush = null;
+                    tempDropper = null;
                 }
-                //draws brush
-                if (InputController.instance.gripDown && InputController.instance.triggerDown)
-                {
-                    Debug.Log("Drawing GS");
-                    DrawGreenScreen();
-                }
-                else
+               if (GreenScreenOBJ != null && InputController.instance.Drawing)
                 {
                     // shoots a raycast to keep the brush on whatever its hitting
                     if (Physics.Linecast(new Vector3(GorillaLocomotion.Player.Instance.rightControllerTransform.transform.position.x, GorillaLocomotion.Player.Instance.rightControllerTransform.transform.position.y + 0.5f, GorillaLocomotion.Player.Instance.rightControllerTransform.transform.position.z), InvisGreenScreenOBJ.transform.position, out RaycastHit info))
@@ -101,15 +199,17 @@ namespace Green_Screen_Mod_Gtag
                         DrawLine();
 
                     }
-                    //resets the part that spawns a new line renderer when trigger is first pressed
+                    //resets the part that spawns a new line renderer when trigger is first pressed And adds a trigger collider
                     if (!InputController.instance.triggerDown & InputController.instance.TriggerToggle)
                     {
                         InputController.instance.TriggerToggle = false;
+                        LineCollider.GenerateCollider(line);
                     }
                     //wipes the last line that was created
                     if (InputController.instance.primaryDown && !InputController.instance.Wiping)
                     {
                         InputController.instance.Wiping = true;
+                        Debug.Log(InputController.instance.Wiping);
                         GameObject.Destroy(lines[lines.Count - 1]);
                         lines.RemoveAt(lines.Count - 1);
                         Debug.Log(lines);
@@ -136,25 +236,7 @@ namespace Green_Screen_Mod_Gtag
                     {
                         WipeT = 3;
                     }
-                    //destroys brush and paint pallet 
-                    if (InputController.instance.SecondaryToggle && !InputController.instance.Wiping)
-                    {
-                        InputController.instance.Wiping = true;
-                        GameObject.Destroy(PaintPallet.instance.Painter);
-                        GameObject.Destroy(GreenScreenOBJ);
-                        GameObject.Destroy(InvisGreenScreenOBJ);
-                        PaintPallet.instance.Painter = null;
-                        GreenScreenOBJ = null;
-                        InvisGreenScreenOBJ = null;
-                        PaintPallet.instance.LineW = 0.1f;
-
-                        //foreach (var line in lines)
-                        //{
-                        // GameObject.Destroy(line.gameObject);
-                        //}
-                        InputController.instance.Wiping = false;
-
-                    }
+                     
                     //freezes the position of the brush
                     if (InputController.instance.LPrimaryDown && !InputController.instance.LPrimaryToggle)
                     {
@@ -173,6 +255,76 @@ namespace Green_Screen_Mod_Gtag
                     {
                         InputController.instance.LPrimaryToggle = false;
                     }
+                }
+               //if not drawing destroys the brush
+                else if (!InputController.instance.Drawing && GreenScreenOBJ != null)
+                {
+                    GameObject.Destroy(GreenScreenOBJ);
+                    GreenScreenOBJ = null;
+                    GameObject.Destroy(InvisGreenScreenOBJ);
+                    InvisGreenScreenOBJ= null;
+                }
+
+                //destroys brush and paint pallet 
+                if (InputController.instance.SecondaryToggle && !InputController.instance.DeleteWiping)
+                {
+                    InputController.instance.DeleteWiping = true;
+                    GameObject.Destroy(PaintPallet.instance.Painter);
+                    GameObject.Destroy(GreenScreenOBJ);
+                    GameObject.Destroy(InvisGreenScreenOBJ);
+                    GameObject.Destroy(Dropper);
+                    PaintPallet.instance.Painter = null;
+                    GreenScreenOBJ = null;
+                    InvisGreenScreenOBJ = null;
+                    Dropper = null;
+                    PaintPallet.instance.LineW = 0.1f;
+                    InputController.instance.Drawing = true;
+                    InputController.instance.Dropping = false;
+                }
+                else if(!InputController.instance.SecondaryToggle && InputController.instance.DeleteWiping)
+                {
+                    InputController.instance.DeleteWiping = false;
+                }
+                //controlls the dropper
+                if (InputController.instance.Dropping)
+                {
+                    //draws the dropper
+                    if (Dropper == null)
+                    {
+                        DrawDropper();
+                    }
+                    else if (Dropper != null)
+                    {
+                        //shoots a raycast out from players hand to what you wana drop
+                        if (Physics.Raycast(new Vector3(GorillaLocomotion.Player.Instance.rightControllerTransform.transform.position.x, GorillaLocomotion.Player.Instance.rightControllerTransform.transform.position.y + 0.5f, GorillaLocomotion.Player.Instance.rightControllerTransform.transform.position.z), GorillaLocomotion.Player.Instance.rightControllerTransform.transform.forward, out RaycastHit info))
+                        {
+                            //sets droppers position to the hit point and sets droppers color
+                            Dropper.transform.position = info.point;
+                            Dropper.transform.Find("Tip").GetComponent<Renderer>().material.color = info.transform.GetComponent<Renderer>().material.color;
+                            //if trigger hit then sets the paint pallets rgb values to the rounded values of what was hit and redraws the painter
+                            if(InputController.instance.triggerDown && !InputController.instance.DropperToggle)
+                            {
+                                InputController.instance.DropperToggle = true;
+                                PaintPallet.instance.R = Mathf.Round(info.transform.GetComponent<Renderer>().material.color.r * 10.0f) * 0.1f;
+                                PaintPallet.instance.B = Mathf.Round(info.transform.GetComponent<Renderer>().material.color.b * 10.0f) * 0.1f;
+                                PaintPallet.instance.G = Mathf.Round(info.transform.GetComponent<Renderer>().material.color.g * 10.0f) * 0.1f;
+                                GameObject.Destroy(PaintPallet.instance.Painter);
+                                PaintPallet.instance.Painter = null;
+                                PaintPallet.instance.LineW = 0.1f;
+                                PaintPallet.instance.DrawPainter();
+                            }
+                            if(!InputController.instance.triggerDown && InputController.instance.DropperToggle)
+                            {
+                                InputController.instance.DropperToggle = false;
+                            }
+                        }
+                    }
+                }
+                //if not dropping destoys the dropper
+                else if (!InputController.instance.Dropping && Dropper != null)
+                {
+                    GameObject.Destroy(Dropper);
+                    Dropper = null;
                 }
                 //adds a cooldown to the buttons
                 if (BtnCooldown > 0)
@@ -203,6 +355,7 @@ namespace Green_Screen_Mod_Gtag
                 InputController.instance.TriggerToggle = true;
                 Line = new GameObject();
                 Line.AddComponent<LineRenderer>();
+                Line.layer = 18;
                 line = Line.GetComponent<LineRenderer>();
                 PrePos = Line.transform.position;
                 line.positionCount = 1;
@@ -247,21 +400,19 @@ namespace Green_Screen_Mod_Gtag
 
         public static void DrawGreenScreen()
         {
-            //draws the brush and the invisible point that the raycast is cated to.
-            if (GreenScreenOBJ)
-                GameObject.Destroy(GreenScreenOBJ);
+            //draws the brush and the invisible point that the raycast is casted to.
 
-            GreenScreenOBJ = GameObject.CreatePrimitive(PrimitiveType.Sphere);
+            GreenScreenOBJ = Instantiate(bundle.LoadAsset<GameObject>("GtagBrush"));
             GreenScreenOBJ.transform.parent = GorillaLocomotion.Player.Instance.rightControllerTransform;
             GreenScreenOBJ.transform.position = GorillaLocomotion.Player.Instance.rightControllerTransform.position;
             GreenScreenOBJ.transform.rotation = GorillaLocomotion.Player.Instance.rightControllerTransform.rotation;
-            GreenScreenOBJ.transform.localScale = new Vector3(PaintPallet.instance.LineW, PaintPallet.instance.LineW, PaintPallet.instance.LineW);
-            GreenScreenOBJ.GetComponent<Renderer>().material.shader = GorillaTagger.Instance.offlineVRRig.materialsToChangeTo[0].shader;
-            GreenScreenOBJ.GetComponent<Renderer>().material.color = new Color(PaintPallet.instance.R, PaintPallet.instance.G, PaintPallet.instance.B);
+            GreenScreenOBJ.transform.localScale = new Vector3(PaintPallet.instance.LineW * 0.1f, PaintPallet.instance.LineW * 0.1f, PaintPallet.instance.LineW * 0.1f);
+            GreenScreenOBJ.transform.Find("Brush").GetComponent<Renderer>().material.shader = GorillaTagger.Instance.offlineVRRig.materialsToChangeTo[0].shader;
+            GreenScreenOBJ.transform.Find("Handle").GetComponent<Renderer>().material.shader = GorillaTagger.Instance.offlineVRRig.materialsToChangeTo[0].shader;
+            GreenScreenOBJ.transform.Find("Brush").GetComponent<Renderer>().material.color = new Color(PaintPallet.instance.R, PaintPallet.instance.G, PaintPallet.instance.B);
+            GreenScreenOBJ.transform.Find("Handle").GetComponent<Renderer>().material.color = new Color(0, 0, 1);
             GreenScreenOBJ.layer = LayerMask.NameToLayer("Ignore Raycast");
 
-            GameObject.Destroy(GreenScreenOBJ.GetComponent<Rigidbody>());
-            GameObject.Destroy(GreenScreenOBJ.GetComponent<Collider>());
             //invis point for raycast
             if (InvisGreenScreenOBJ)
                 GameObject.Destroy(InvisGreenScreenOBJ);
@@ -277,6 +428,24 @@ namespace Green_Screen_Mod_Gtag
 
             GameObject.Destroy(InvisGreenScreenOBJ.GetComponent<Rigidbody>());
             GameObject.Destroy(InvisGreenScreenOBJ.GetComponent<Collider>());
+        }
+
+        public static void DrawDropper()
+        {
+            //draws the dropper
+            Debug.Log(Dropper);
+            Dropper = Instantiate(bundle2.LoadAsset<GameObject>("GtagDropper"));
+            Dropper.transform.parent = GorillaLocomotion.Player.Instance.rightControllerTransform;
+            Dropper.transform.position = GorillaLocomotion.Player.Instance.rightControllerTransform.position;
+            Dropper.transform.rotation = GorillaLocomotion.Player.Instance.rightControllerTransform.rotation;
+            Dropper.transform.localScale = new Vector3(0.1f, 0.1f, 0.1f);
+            Dropper.transform.Find("Tip").GetComponent<Renderer>().material.shader = GorillaTagger.Instance.offlineVRRig.materialsToChangeTo[0].shader;
+            Dropper.transform.Find("Handle").GetComponent<Renderer>().material.shader = GorillaTagger.Instance.offlineVRRig.materialsToChangeTo[0].shader;
+            Dropper.transform.Find("Tip").GetComponent<Renderer>().material.color = new Color(1, 1, 1);
+            Dropper.transform.Find("Handle").GetComponent<Renderer>().material.color = new Color(1, 0, 0);
+            Dropper.layer = LayerMask.NameToLayer("Ignore Raycast");
+
+            Debug.Log(Dropper);
         }
 
     }

@@ -83,8 +83,6 @@ namespace Green_Screen_Mod
             Painter.GetComponentInChildren<Renderer>().material.shader = GorillaTagger.Instance.offlineVRRig.materialsToChangeTo[0].shader;
             Painter.GetComponentInChildren<Renderer>().material.color = new Color(0.6f, 0.3f, 0);
             Painter.layer = LayerMask.NameToLayer("Ignore Raycast");
-            GameObject.Destroy(Painter.GetComponent<Rigidbody>());
-            GameObject.Destroy(Painter.GetComponent<Collider>());
 
             //canvasOBJ = new GameObject();
             //canvasOBJ.transform.parent = Painter.transform;
@@ -104,13 +102,13 @@ namespace Green_Screen_Mod
         {
             //draws all buttons in a specific location (this probably is going to be changed in the future thats why they all are drawn seperatly)
             button1 = GameObject.CreatePrimitive(PrimitiveType.Cube);
+            button1.GetComponent<Collider>().isTrigger = true;
             button1.transform.parent = Painter.transform;
             button1.transform.localScale = new Vector3(.25f, .25f, .25f);
             button1.transform.rotation = Painter.transform.rotation;
             button1.transform.localPosition = new Vector3(-0.8f, 0.6f, -1.2f);
             button1.GetComponent<Renderer>().material.shader = GorillaTagger.Instance.offlineVRRig.materialsToChangeTo[0].shader;
             button1.GetComponent<Renderer>().material.color = Color.white;
-            button1.GetComponent<Collider>().isTrigger = true;
             button1.layer = 18;
             button1.AddComponent<ButtonCollision>().BtnId = buttons[0];
 
@@ -132,91 +130,91 @@ namespace Green_Screen_Mod
             GameObject.Destroy(button1.GetComponent<Rigidbody>());
 
             button2 = GameObject.CreatePrimitive(PrimitiveType.Cube);
+            button2.GetComponent<Collider>().isTrigger = true;
             button2.transform.parent = Painter.transform;
             button2.transform.localScale = new Vector3(.25f, .25f, .25f);
             button2.transform.rotation = Painter.transform.rotation;
             button2.transform.localPosition = new Vector3(-0.8f, 0.6f, -0.3f);
             button2.GetComponent<Renderer>().material.shader = GorillaTagger.Instance.offlineVRRig.materialsToChangeTo[0].shader;
             button2.GetComponent<Renderer>().material.color = Color.white;
-            button2.GetComponent<Collider>().isTrigger = true;
             button2.layer = 18;
             button2.AddComponent<ButtonCollision>().BtnId = buttons[1];
 
             GameObject.Destroy(button2.GetComponent<Rigidbody>());
 
             button3 = GameObject.CreatePrimitive(PrimitiveType.Cube);
+            button3.GetComponent<Collider>().isTrigger = true;
             button3.transform.parent = Painter.transform;
             button3.transform.localScale = new Vector3(.25f, .25f, .25f);
             button3.transform.rotation = Painter.transform.rotation;
             button3.transform.localPosition = new Vector3(-0.3f, 0.6f, -1.2f);
             button3.GetComponent<Renderer>().material.shader = GorillaTagger.Instance.offlineVRRig.materialsToChangeTo[0].shader;
             button3.GetComponent<Renderer>().material.color = Color.white;
-            button3.GetComponent<Collider>().isTrigger = true;
             button3.layer = 18;
             button3.AddComponent<ButtonCollision>().BtnId = buttons[2];
 
             GameObject.Destroy(button3.GetComponent<Rigidbody>());
 
             button4 = GameObject.CreatePrimitive(PrimitiveType.Cube);
+            button4.GetComponent<Collider>().isTrigger = true;
             button4.transform.parent = Painter.transform;
             button4.transform.localScale = new Vector3(.25f, .25f, .25f);
             button4.transform.rotation = Painter.transform.rotation;
             button4.transform.localPosition = new Vector3(-0.3f, 0.6f, -0.3f);
             button4.GetComponent<Renderer>().material.shader = GorillaTagger.Instance.offlineVRRig.materialsToChangeTo[0].shader;
             button4.GetComponent<Renderer>().material.color = Color.white;
-            button4.GetComponent<Collider>().isTrigger = true;
             button4.layer = 18;
             button4.AddComponent<ButtonCollision>().BtnId = buttons[3];
 
             GameObject.Destroy(button4.GetComponent<Rigidbody>());
 
             button5 = GameObject.CreatePrimitive(PrimitiveType.Cube);
+            button5.GetComponent<Collider>().isTrigger = true;
             button5.transform.parent = Painter.transform;
             button5.transform.localScale = new Vector3(.25f, .25f, .25f);
             button5.transform.rotation = Painter.transform.rotation;
             button5.transform.localPosition = new Vector3(0.2f, 0.6f, -1.2f);
             button5.GetComponent<Renderer>().material.shader = GorillaTagger.Instance.offlineVRRig.materialsToChangeTo[0].shader;
             button5.GetComponent<Renderer>().material.color = Color.white;
-            button5.GetComponent<Collider>().isTrigger = true;
             button5.layer = 18;
             button5.AddComponent<ButtonCollision>().BtnId = buttons[4];
 
             GameObject.Destroy(button5.GetComponent<Rigidbody>());
 
             button6 = GameObject.CreatePrimitive(PrimitiveType.Cube);
+            button6.GetComponent<Collider>().isTrigger = true;
             button6.transform.parent = Painter.transform;
             button6.transform.localScale = new Vector3(.25f, .25f, .25f);
             button6.transform.rotation = Painter.transform.rotation;
             button6.transform.localPosition = new Vector3(0.2f, 0.6f, -0.3f);
             button6.GetComponent<Renderer>().material.shader = GorillaTagger.Instance.offlineVRRig.materialsToChangeTo[0].shader;
             button6.GetComponent<Renderer>().material.color = Color.white;
-            button6.GetComponent<Collider>().isTrigger = true;
             button6.layer = 18; ;
             button6.AddComponent<ButtonCollision>().BtnId = buttons[5];
 
             GameObject.Destroy(button6.GetComponent<Rigidbody>());
 
             button7 = GameObject.CreatePrimitive(PrimitiveType.Cube);
+            button7.GetComponent<Collider>().isTrigger = true;
             button7.transform.parent = Painter.transform;
             button7.transform.localScale = new Vector3(.25f, .25f, .25f);
             button7.transform.rotation = Painter.transform.rotation;
             button7.transform.localPosition = new Vector3(0.7f, 0.6f, -1.2f);
             button7.GetComponent<Renderer>().material.shader = GorillaTagger.Instance.offlineVRRig.materialsToChangeTo[0].shader;
             button7.GetComponent<Renderer>().material.color = Color.white;
-            button7.GetComponent<Collider>().isTrigger = true;
             button7.layer = 18;
             button7.AddComponent<ButtonCollision>().BtnId = buttons[6];
 
             GameObject.Destroy(button7.GetComponent<Rigidbody>());
 
             button8 = GameObject.CreatePrimitive(PrimitiveType.Cube);
+            button8.GetComponent<Collider>().isTrigger = true;
             button8.transform.parent = Painter.transform;
             button8.transform.localScale = new Vector3(.25f, .25f, .25f);
             button8.transform.rotation = Painter.transform.rotation;
             button8.transform.localPosition = new Vector3(0.7f, 0.6f, -0.3f);
             button8.GetComponent<Renderer>().material.shader = GorillaTagger.Instance.offlineVRRig.materialsToChangeTo[0].shader;
             button8.GetComponent<Renderer>().material.color = Color.white;
-            button8.GetComponent<Collider>().isTrigger = true;
             button8.layer = 18;
             button8.AddComponent<Text>();
             button8.AddComponent<ButtonCollision>().BtnId = buttons[7];
@@ -313,8 +311,12 @@ namespace Green_Screen_Mod
                 if (R >= 0.1)
                     R -= 0.1f;
                 GameObject.Destroy(Painter);
+                GameObject.Destroy(MainPatch.GreenScreenOBJ);
                 DrawPainter();
-                MainPatch.DrawGreenScreen();
+                if (InputController.instance.Drawing)
+                {
+                    MainPatch.DrawGreenScreen();
+                }
             }
             else if (ButtonNum == 1)
             {
@@ -323,8 +325,12 @@ namespace Green_Screen_Mod
                 if (R < 1)
                     R += 0.1f;
                 GameObject.Destroy(Painter);
+                GameObject.Destroy(MainPatch.GreenScreenOBJ);
                 DrawPainter();
-                MainPatch.DrawGreenScreen();
+                if (InputController.instance.Drawing)
+                {
+                    MainPatch.DrawGreenScreen();
+                }
             }
             if (ButtonNum == 2)
             {
@@ -333,8 +339,12 @@ namespace Green_Screen_Mod
                 if (G >= 0.1)
                     G -= 0.1f; ;
                 GameObject.Destroy(Painter);
+                GameObject.Destroy(MainPatch.GreenScreenOBJ);
                 DrawPainter();
-                MainPatch.DrawGreenScreen();
+                if (InputController.instance.Drawing)
+                {
+                    MainPatch.DrawGreenScreen();
+                }
             }
             else if (ButtonNum == 3)
             {
@@ -343,8 +353,12 @@ namespace Green_Screen_Mod
                 if (G < 1)
                     G += 0.1f;
                 GameObject.Destroy(Painter);
+                GameObject.Destroy(MainPatch.GreenScreenOBJ);
                 DrawPainter();
-                MainPatch.DrawGreenScreen();
+                if (InputController.instance.Drawing)
+                {
+                    MainPatch.DrawGreenScreen();
+                }
             }
             if (ButtonNum == 4)
             {
@@ -353,8 +367,12 @@ namespace Green_Screen_Mod
                 if (B >= 0.1)
                     B -= 0.1f; ;
                 GameObject.Destroy(Painter);
+                GameObject.Destroy(MainPatch.GreenScreenOBJ);
                 DrawPainter();
-                MainPatch.DrawGreenScreen();
+                if (InputController.instance.Drawing)
+                {
+                    MainPatch.DrawGreenScreen();
+                }
             }
             else if (ButtonNum == 5)
             {
@@ -363,8 +381,12 @@ namespace Green_Screen_Mod
                 if (B < 1)
                     B += 0.1f;
                 GameObject.Destroy(Painter);
+                GameObject.Destroy(MainPatch.GreenScreenOBJ);
                 DrawPainter();
-                MainPatch.DrawGreenScreen();
+                if (InputController.instance.Drawing)
+                {
+                    MainPatch.DrawGreenScreen();
+                }
             }
             if (ButtonNum == 6)
             {
@@ -373,8 +395,12 @@ namespace Green_Screen_Mod
                 if (LineW >= 0.2)
                     LineW -= 0.1f; ;
                 GameObject.Destroy(Painter);
+                GameObject.Destroy(MainPatch.GreenScreenOBJ);
                 DrawPainter();
-                MainPatch.DrawGreenScreen();
+                if (InputController.instance.Drawing)
+                {
+                    MainPatch.DrawGreenScreen();
+                }
             }
             else if (ButtonNum == 7)
             {
@@ -383,8 +409,12 @@ namespace Green_Screen_Mod
                 if (LineW < 1)
                     LineW += 0.1f;
                 GameObject.Destroy(Painter);
+                GameObject.Destroy(MainPatch.GreenScreenOBJ);
                 DrawPainter();
-                MainPatch.DrawGreenScreen();
+                if (InputController.instance.Drawing)
+                {
+                    MainPatch.DrawGreenScreen();
+                }
             }
 
         }

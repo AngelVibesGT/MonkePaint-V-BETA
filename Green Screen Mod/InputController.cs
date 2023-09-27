@@ -10,15 +10,21 @@ namespace Green_Screen_Mod
         public bool triggerDown;
         public bool primaryDown;
         public bool Wiping;
+        public bool TempWiping;
+        public bool DeleteWiping;
         public bool TriggerToggle;
         public bool SecondaryToggle;
         public bool LPrimaryDown;
         public bool LPrimaryToggle;
+        public bool LSecondaryDown;
+        public bool DropperToggle;
+        
         public bool FreezeBrush;
-        public bool Drawing;
+        public bool Drawing = true;
         public bool Dropping;
 
         public float GSY;
+        public float CRY;
 
         void Start()
         {
@@ -79,6 +85,17 @@ namespace Green_Screen_Mod
                 {
                     LPrimaryDown = false;
                 }
+                //left secondary button
+                if(ControllerInputPoller.instance.leftControllerSecondaryButton)
+                {
+                    LSecondaryDown = true;
+                }
+                else
+                {
+                    LSecondaryDown = false;
+                }
+                //controller y rotation
+                CRY = ControllerInputPoller.instance.leftControllerRotation.x;
             }
             catch
             {
